@@ -3,16 +3,21 @@ let swordRotationCounterClock = -swordRotationClock;
 let playerSpeed = 4;
 let player;
 let sword;
+let buttonLeft;
+let buttonRight;
+let buttonUp;
+let buttonDown;
 let score;
 let scoreText;
 let enemy;
-let maxBallEnemy = 3;
+let maxBallEnemy = 4;
 let ballEnemyCount = 0;
 let enemySpeed = 1.5;
 let ballEnemy;
 let ballEnemySpeed = 3.5;
 let timer = 0;
 let GameOver = false;
+let resetButton;
 
 
 
@@ -26,6 +31,8 @@ class mainScene {
         //Carrega o sprite do player na cena
         this.load.image('player', 'assets/BallGB.png');
         this.load.image('enemy', 'assets/BallRED.png');
+        this.load.image('button', 'assets/ArrowButton.png');
+        this.load.image('resetButton', 'assets/RestartButton.png');
         //this.load.image('sword', 'assets/Sword.png');
     }
     create() {
@@ -54,16 +61,28 @@ class mainScene {
         
 
         this.physics.add.collider(player, enemy);
-        this.physics.add.overlap(player, enemy, this.hitPlayer, null, this);
+        this.physics.add.collider(player, enemy, this.hitPlayer, null, this);
 
         this.physics.add.collider(player, ballEnemy);
-        
 
-        
-        
         //this.physics.add.collider(sword, enemy);
         //this.physics.add.collider(sword, enemy, this.hitEnemy, null, this);
        
+        buttonLeft = this.add.image(45, 500, 'button').setScale(0.075).setInteractive()
+        .on('pointerdown', () => this.moveL());
+        buttonRight = this.add.image(155, 500, 'button').setScale(0.075).setInteractive()
+        .on('pointerdown', () => this.moveR());
+        buttonUp = this.add.image(100, 450, 'button').setScale(0.075).setInteractive()
+        .on('pointerdown', () => this.moveUP());
+        buttonDown = this.add.image(100, 550, 'button').setScale(0.075).setInteractive()
+        .on('pointerdown', () => this.moveDown());
+
+        buttonUp.rotation = Phaser.Math.DegToRad(-90);
+        buttonDown.rotation = Phaser.Math.DegToRad(90);
+        buttonLeft.rotation = Phaser.Math.DegToRad(180);
+          
+        this.input.addPointer(1);
+        
         
     }
     update() {
@@ -71,18 +90,18 @@ class mainScene {
         //É como o update da Unity e onde a lógica do jogo ocorre
         //Movimentação horizontal
         if (this.arrow.right.isDown) {
-            player.x += playerSpeed; //Move para a direita
+            this.moveR();
+             //Move para a direita
 
         } else if (this.arrow.left.isDown) {
-            player.x -= playerSpeed; //Move para a esquerda
-
+            this.moveL(); //Move para a esquerda
         }
         //Movimentação vertical
         if (this.arrow.down.isDown) {
-            player.y += playerSpeed; //Move para baixo
+            this.moveDown(); //Move para baixo
 
         } else if (this.arrow.up.isDown) {
-            player.y -= playerSpeed; //Move para cima
+            this.moveUP(); //Move para cima
 
         }
 
@@ -100,43 +119,72 @@ class mainScene {
             enemy.y -= enemySpeed;
         }
 
-        if ( ballEnemyCount == 0 && this.time.now > 10000) {
-            ballEnemy = this.physics.add.image(0, 0, 'enemy').setScale(1.5);
+        if(GameOver == false){
 
-            ballEnemy.body.velocity.x = 200;
-            ballEnemy.body.velocity.y = 200;
-            //certifica que a bola ira rebater quando acertar em algo
-            ballEnemy.body.bounce.setTo(1);
-            ballEnemy.body.collideWorldBounds = true;
-            ballEnemyCount += 1;
-            this.physics.add.overlap(player, ballEnemy, this.hitPlayer, null, this);
-            
+            playerSpeed = 4;
+            enemySpeed = 1.5;
+            if ( ballEnemyCount == 0 && this.time.now > 10000) {
+                ballEnemy = this.physics.add.image(0, 0, 'enemy').setScale(1.5);
+    
+                ballEnemy.body.velocity.x = 200;
+                ballEnemy.body.velocity.y = 200;
+                //certifica que a bola ira rebater quando acertar em algo
+                ballEnemy.body.bounce.setTo(1);
+                ballEnemy.body.collideWorldBounds = true;
+                ballEnemyCount += 1;
+                this.physics.add.overlap(player, ballEnemy, this.hitPlayer, null, this);
+                
+            }
+            if ( ballEnemyCount == 1 && this.time.now > 25000) {
+                ballEnemy = this.physics.add.image(0, 0, 'enemy').setScale(1.5);
+    
+                ballEnemy.body.velocity.x = 300;
+                ballEnemy.body.velocity.y = 100;
+                //certifica que a bola ira rebater quando acertar em algo
+                ballEnemy.body.bounce.setTo(1);
+                ballEnemy.body.collideWorldBounds = true;
+                ballEnemyCount += 1;
+                this.physics.add.overlap(player, ballEnemy, this.hitPlayer, null, this);
+                
+            }
+            if ( ballEnemyCount == 2 && this.time.now > 45000) {
+                ballEnemy = this.physics.add.image(0, 0, 'enemy').setScale(1.5);
+    
+                ballEnemy.body.velocity.x = 100;
+                ballEnemy.body.velocity.y = 300;
+                //certifica que a bola ira rebater quando acertar em algo
+                ballEnemy.body.bounce.setTo(1);
+                ballEnemy.body.collideWorldBounds = true;
+                ballEnemyCount += 1;
+                this.physics.add.overlap(player, ballEnemy, this.hitPlayer, null, this);
+                
+            }
+    
+            if ( ballEnemyCount == 3 && this.time.now > 80000) {
+                ballEnemy = this.physics.add.image(0, 0, 'enemy').setScale(1.5);
+    
+                ballEnemy.body.velocity.x = 600;
+                ballEnemy.body.velocity.y = 50;
+                //certifica que a bola ira rebater quando acertar em algo
+                ballEnemy.body.bounce.setTo(1);
+                ballEnemy.body.collideWorldBounds = true;
+                ballEnemyCount += 1;
+                this.physics.add.overlap(player, ballEnemy, this.hitPlayer, null, this);
+                
+            }
         }
-        if ( ballEnemyCount == 1 && this.time.now > 25000) {
-            ballEnemy = this.physics.add.image(0, 0, 'enemy').setScale(1.5);
 
-            ballEnemy.body.velocity.x = 300;
-            ballEnemy.body.velocity.y = 100;
-            //certifica que a bola ira rebater quando acertar em algo
-            ballEnemy.body.bounce.setTo(1);
-            ballEnemy.body.collideWorldBounds = true;
-            ballEnemyCount += 1;
-            this.physics.add.overlap(player, ballEnemy, this.hitPlayer, null, this);
-            
-        }
-        if ( ballEnemyCount == 2 && this.time.now > 45000) {
-            ballEnemy = this.physics.add.image(0, 0, 'enemy').setScale(1.5);
+        if(GameOver == true){
+            if( ballEnemyCount > 0){
 
-            ballEnemy.body.velocity.x = 100;
-            ballEnemy.body.velocity.y = 300;
-            //certifica que a bola ira rebater quando acertar em algo
-            ballEnemy.body.bounce.setTo(1);
-            ballEnemy.body.collideWorldBounds = true;
-            ballEnemyCount += 1;
-            this.physics.add.overlap(player, ballEnemy, this.hitPlayer, null, this);
-            
+                ballEnemy.body.velocity.x = 0;
+                ballEnemy.body.velocity.y = 0;
+
+            }
+
+            enemySpeed = 0;
+            playerSpeed = 0;
         }
-       
         
         //rotação da espada
         // if (this.keyA.isDown) {
@@ -151,16 +199,15 @@ class mainScene {
 
         //faça os pontos aumentarem com o tempo
         timer += 1;
-        if (timer > 60) {
+        if (timer > 60 && GameOver == false) {
             score += 1;
             scoreText.setText('Score: ' + score);
             timer = 0;
         }
 
         if(GameOver == true){
-            this.input.on('pointerdown', function (pointer){
-                this.scene.restart();
-            });
+            resetButton = this.physics.add.sprite(400, 300, 'resetButton').setInteractive()
+            .on('pointerdown', () => this.gameOverScene());    
         }
         
 
@@ -171,10 +218,29 @@ class mainScene {
         
         console.log("hit1");
         scoreText.setText('Score: ' + score);
-        this.add.text(80, 200, "Game Over", { font: '32px Arial', fill: '#ffffff', align: 'center'});
-        this.add.text(80, 400, "Press any location to restart", { font: '32px Arial', fill: '#ffffff', align: 'center'});
         GameOver = true;
         
+    }
+
+    gameOverScene(){
+        this.scene.restart();
+        resetButton.destroy();
+        this.time.now = 0;
+        GameOver = false;
+        score = 0;
+    }
+
+    moveR(){
+        player.x += playerSpeed;
+    }
+    moveL(){
+        player.x -= playerSpeed;
+    }
+    moveUP(){
+        player.y -= playerSpeed;
+    }
+    moveDown(){
+        player.y += playerSpeed;
     }
 
     // hitEnemy(sword, enemy) {
