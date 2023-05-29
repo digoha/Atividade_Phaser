@@ -15,9 +15,15 @@ let ballEnemyCount = 0;
 let enemySpeed = 1.5;
 let ballEnemy;
 let ballEnemySpeed = 3.5;
+let spawnBallEnemyTime = 5;
+let SBETimeReset = 5;
 let timer = 0;
 let GameOver = false;
 let resetButton;
+let bLPressed = false;
+let bRPressed = false;
+let bUPPressed = false;
+let bDownPressed = false;
 
 
 
@@ -68,14 +74,81 @@ class mainScene {
         //this.physics.add.collider(sword, enemy);
         //this.physics.add.collider(sword, enemy, this.hitEnemy, null, this);
        
-        buttonLeft = this.add.image(45, 500, 'button').setScale(0.075).setInteractive()
-        .on('pointerdown', () => this.moveL());
-        buttonRight = this.add.image(155, 500, 'button').setScale(0.075).setInteractive()
-        .on('pointerdown', () => this.moveR());
-        buttonUp = this.add.image(100, 450, 'button').setScale(0.075).setInteractive()
-        .on('pointerdown', () => this.moveUP());
-        buttonDown = this.add.image(100, 550, 'button').setScale(0.075).setInteractive()
-        .on('pointerdown', () => this.moveDown());
+        buttonLeft = this.add.image(45, 500, 'button').setAlpha(0.25).setScale(0.075).setInteractive();
+        buttonLeft.on('pointerdown', pointer => 
+        {
+            bLPressed = true;
+        });
+        buttonLeft.on('pointerout', pointer => 
+        {
+
+            bLPressed = false;
+
+        });
+
+        buttonLeft.on('pointerup',  pointer => 
+        {
+
+            bLPressed = false;
+
+        });
+
+        buttonRight = this.add.image(155, 500, 'button').setAlpha(0.25).setScale(0.075).setInteractive();
+        buttonRight.on('pointerdown', pointer => 
+        {
+            bRPressed = true;
+        });
+        buttonRight.on('pointerout', pointer => 
+        {
+
+            bRPressed = false;
+
+        });
+
+        buttonRight.on('pointerup',  pointer => 
+        {
+
+            bRPressed = false;
+
+        });
+
+        buttonUp = this.add.image(100, 450, 'button').setAlpha(0.25).setScale(0.075).setInteractive()
+        buttonUp.on('pointerdown', pointer => 
+        {
+            bUPPressed = true;
+        });
+        buttonUp.on('pointerout', pointer => 
+        {
+
+            bUPPressed = false;
+
+        });
+
+        buttonUp.on('pointerup',  pointer => 
+        {
+
+            bUPPressed = false;
+
+        });
+
+        buttonDown = this.add.image(100, 550, 'button').setAlpha(0.25).setScale(0.075).setInteractive()
+        buttonDown.on('pointerdown', pointer => 
+        {
+            bDownPressed = true;
+        });
+        buttonDown.on('pointerout', pointer => 
+        {
+
+            bDownPressed = false;
+
+        });
+
+        buttonDown.on('pointerup',  pointer => 
+        {
+
+            bDownPressed = false;
+
+        });
 
         buttonUp.rotation = Phaser.Math.DegToRad(-90);
         buttonDown.rotation = Phaser.Math.DegToRad(90);
@@ -86,21 +159,22 @@ class mainScene {
         
     }
     update() {
+        const pointer = this.input.activePointer;
         //update é chamado 60 vezes por segundo;
         //É como o update da Unity e onde a lógica do jogo ocorre
         //Movimentação horizontal
-        if (this.arrow.right.isDown) {
+        if (this.arrow.right.isDown || bRPressed) {
             this.moveR();
              //Move para a direita
 
-        } else if (this.arrow.left.isDown) {
+        } else if (this.arrow.left.isDown || bLPressed) {
             this.moveL(); //Move para a esquerda
         }
         //Movimentação vertical
-        if (this.arrow.down.isDown) {
+        if (this.arrow.down.isDown || bDownPressed) {
             this.moveDown(); //Move para baixo
 
-        } else if (this.arrow.up.isDown) {
+        } else if (this.arrow.up.isDown || bUPPressed) {
             this.moveUP(); //Move para cima
 
         }
@@ -123,7 +197,7 @@ class mainScene {
 
             playerSpeed = 4;
             enemySpeed = 1.5;
-            if ( ballEnemyCount == 0 && this.time.now > 10000) {
+            if ( ballEnemyCount == 0 && this.time.now > 5000) {
                 ballEnemy = this.physics.add.image(0, 0, 'enemy').setScale(1.5);
     
                 ballEnemy.body.velocity.x = 200;
@@ -177,8 +251,7 @@ class mainScene {
         if(GameOver == true){
             if( ballEnemyCount > 0){
 
-                ballEnemy.body.velocity.x = 0;
-                ballEnemy.body.velocity.y = 0;
+                
 
             }
 
@@ -223,11 +296,12 @@ class mainScene {
     }
 
     gameOverScene(){
-        this.scene.restart();
         resetButton.destroy();
         this.time.now = 0;
         GameOver = false;
         score = 0;
+        this.scene.restart();
+        location.reload();
     }
 
     moveR(){
